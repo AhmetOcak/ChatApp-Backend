@@ -1,8 +1,8 @@
 package com.plugins
 
+import com.factory.DatabaseFactory
 import io.ktor.server.application.*
-import io.ktor.server.routing.*
 
 fun Application.configureDatabases() {
-    routing {}
+    DatabaseFactory.init()
 }
