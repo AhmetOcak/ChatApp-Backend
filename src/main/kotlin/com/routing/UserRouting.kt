@@ -1,6 +1,6 @@
-package com.plugins
+package com.routing
 
-import com.dao.core.isValidEmail
+import com.core.isValidEmail
 import com.dao.impl.UserDaoImpl
 import com.model.User
 import io.ktor.http.*
