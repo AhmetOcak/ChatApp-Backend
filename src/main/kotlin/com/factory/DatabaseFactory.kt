@@ -1,5 +1,6 @@
 package com.factory
 
+import com.db_tables.ChatRoomsTable
 import com.db_tables.UserTable
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -16,7 +17,10 @@ object DatabaseFactory {
             password = "ahmetocak2000"
         )
         transaction (database) {
-            SchemaUtils.create(UserTable)
+            SchemaUtils.apply {
+                create(UserTable)
+                create(ChatRoomsTable)
+            }
         }
     }
     suspend fun <T> dbQuery(block: suspend () -> T): T =
