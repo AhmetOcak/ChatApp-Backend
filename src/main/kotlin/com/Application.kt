@@ -1,5 +1,6 @@
 package com
 
+import com.dao.impl.UserDaoImpl
 import com.plugins.*
 import io.ktor.server.application.*
 
@@ -11,5 +12,5 @@ fun Application.module() {
     configureSockets()
     configureSerialization()
     configureDatabases()
-    configureRouting()
+    configureUserRouting(userDao = UserDaoImpl())
 }
