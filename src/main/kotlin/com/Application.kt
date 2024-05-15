@@ -1,9 +1,11 @@
 package com
 
 import com.dao.impl.ChatRoomsDaoImpl
+import com.dao.impl.MessagesDaoImpl
 import com.dao.impl.UserDaoImpl
 import com.plugins.*
 import com.routing.configureChatRooms
+import com.routing.configureMessageRouting
 import com.routing.configureUserRouting
 import io.ktor.server.application.*
 
@@ -17,4 +19,5 @@ fun Application.module() {
     configureDatabases()
     configureUserRouting(userDao = UserDaoImpl())
     configureChatRooms(chatRoomDao = ChatRoomsDaoImpl())
+    configureMessageRouting(messagesDao = MessagesDaoImpl())
 }
