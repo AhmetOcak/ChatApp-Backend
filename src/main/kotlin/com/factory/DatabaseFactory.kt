@@ -2,6 +2,7 @@ package com.factory
 
 import com.db_tables.ChatRoomsTable
 import com.db_tables.MessagesTable
+import com.db_tables.UserChatRoomsTable
 import com.db_tables.UserTable
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -22,6 +23,7 @@ object DatabaseFactory {
                 create(UserTable)
                 create(ChatRoomsTable)
                 create(MessagesTable)
+                create(UserChatRoomsTable)
             }
         }
     }
