@@ -39,9 +39,9 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 val username = formParameters.getOrFail("username")
                 val email = formParameters.getOrFail("email")
                 val password = formParameters.getOrFail("password")
-                val profilePicUrl = formParameters.getOrFail("profilePicUrl")
+                val profilePicUrl = formParameters["profilePicUrl"]
 
-                if (username.isBlank() || email.isBlank() || password.isBlank() || profilePicUrl.isBlank()) {
+                if (username.isBlank() || email.isBlank() || password.isBlank() || profilePicUrl?.isBlank() == false) {
                     throw IllegalArgumentException("Parameters must not be blank")
                 }
                 if (!email.isValidEmail()) {
@@ -59,7 +59,7 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                     throw Exception("Error occurred while creating user.")
                 }
 
-                call.respond(HttpStatusCode.Created, message = "New user created.")
+                call.respond(HttpStatusCode.Created, message = user)
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, message = e.stackTraceToString())
             } catch (e: Exception) {
