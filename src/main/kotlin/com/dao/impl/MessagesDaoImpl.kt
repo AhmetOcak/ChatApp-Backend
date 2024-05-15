@@ -8,9 +8,9 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-class MessagesDaoImpl() : MessagesDao {
+class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
-        senderId: String,
+        senderId: Int,
         senderProfilePicUrl: String,
         roomId: Int,
         messageText: String

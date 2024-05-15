@@ -5,17 +5,16 @@ import org.jetbrains.exposed.sql.ResultRow
 
 interface UserDao {
     suspend fun create(
-        id: String,
         email: String,
         username: String,
         password: String,
         profilePicUrl: String?
     ): User?
 
-    suspend fun getById(id: String): User?
-    suspend fun deleteUser(id: String): Boolean
+    suspend fun getById(id: Int): User?
+    suspend fun deleteUser(id: Int): Boolean
     suspend fun updateUser(
-        id: String,
+        id: Int,
         username: String?,
         password: String?,
         profilePicUrl: String?

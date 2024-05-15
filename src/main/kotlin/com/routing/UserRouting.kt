@@ -20,7 +20,7 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
 
         get("/$BASE/getUser/{userId}") {
             try {
-                val userId = call.parameters["userId"] ?: return@get
+                val userId = call.parameters["userId"]?.toInt() ?: return@get
                 val user = userDao.getById(userId)
 
                 if (user == null) {
@@ -36,13 +36,12 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
         post("/$BASE/createUser") {
             try {
                 val formParameters = call.receiveParameters()
-                val id = formParameters.getOrFail("id")
                 val username = formParameters.getOrFail("username")
                 val email = formParameters.getOrFail("email")
                 val password = formParameters.getOrFail("password")
                 val profilePicUrl = formParameters.getOrFail("profilePicUrl")
 
-                if (id.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || profilePicUrl.isBlank()) {
+                if (username.isBlank() || email.isBlank() || password.isBlank() || profilePicUrl.isBlank()) {
                     throw IllegalArgumentException("Parameters must not be blank")
                 }
                 if (!email.isValidEmail()) {
@@ -50,7 +49,6 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 }
 
                 val user = userDao.create(
-                    id = id,
                     username = username,
                     email = email,
                     password = password,
@@ -71,7 +69,7 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
 
         delete("/$BASE/deleteUser/{userId}") {
             try {
-                val userId = call.parameters["userId"] ?: return@delete
+                val userId = call.parameters["userId"]?.toInt() ?: return@delete
                 val isDeleted = userDao.deleteUser(userId)
 
                 if (isDeleted) {
@@ -86,7 +84,7 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
 
         put("/$BASE/updateUser/{userId}") {
             try {
-                val id = call.parameters["userId"] ?: return@put
+                val id = call.parameters["userId"]?.toInt() ?: return@put
 
                 val formParameters = call.receiveParameters()
                 val username = formParameters["username"]

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserChatRooms(
-    val userId: String,
+    val userId: Int,
     val roomId: Int
 )

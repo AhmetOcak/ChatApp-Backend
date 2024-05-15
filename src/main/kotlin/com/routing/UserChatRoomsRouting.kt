@@ -17,7 +17,7 @@ fun Application.configureUserChatRoomsRouting(
 
         post("/$BASE/addUserToRoom/{userId}/{roomId}") {
             try {
-                val userId = call.parameters["userId"] ?: return@post
+                val userId = call.parameters["userId"]?.toInt() ?: return@post
                 val roomId = call.parameters["roomId"]?.toInt() ?: return@post
 
                 val userRoomId = userChatRoomsDao.addUserToRoom(userId = userId, roomId = roomId)
@@ -35,7 +35,7 @@ fun Application.configureUserChatRoomsRouting(
 
         put("/$BASE/removeUserFromRoom/{userId}/{roomId}") {
             try {
-                val userId = call.parameters["userId"] ?: return@put
+                val userId = call.parameters["userId"]?.toInt() ?: return@put
                 val roomId = call.parameters["roomId"]?.toInt() ?: return@put
 
                 val isRemoved = userChatRoomsDao.removeUserFromRoom(userId = userId, roomId = roomId)

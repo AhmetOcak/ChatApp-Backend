@@ -1,7 +1,8 @@
 package com.plugins
 
+import com.core.toReceiveMessage
+import com.dao.MessagesDao
 import com.model.SendMessage
-import com.model.toReceiveMessage
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -11,7 +12,7 @@ import kotlinx.serialization.json.Json
 
 // TODO: Bir client tarafından mesaj içeriği aynı olan mesajlar arka arkaya gönderilemiyor.
 // TODO: Bağlantı sayısı 1 olduğunda son bağlantıda mesaj gönderdiğinde bağlantı otomatik sonlanıyor.
-fun Application.configureSockets() {
+fun Application.configureSockets(messagesDao: MessagesDao) {
     install(WebSockets) {
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
     }

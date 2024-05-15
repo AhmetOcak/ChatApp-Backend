@@ -9,7 +9,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class UserDaoImpl() : UserDao {
     override suspend fun create(
-        id: String,
         email: String,
         username: String,
         password: String,
@@ -17,7 +16,6 @@ class UserDaoImpl() : UserDao {
     ): User? =
         dbQuery {
             val insertStatement = UserTable.insert {
-                it[UserTable.id] = id
                 it[UserTable.email] = email
                 it[UserTable.username] = username
                 it[UserTable.password] = password
@@ -26,7 +24,7 @@ class UserDaoImpl() : UserDao {
             insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
         }
 
-    override suspend fun getById(id: String): User? {
+    override suspend fun getById(id: Int): User? {
         return dbQuery {
             UserTable.select { UserTable.id eq id }
                 .map { rowTo(it) }
@@ -34,14 +32,14 @@ class UserDaoImpl() : UserDao {
         }
     }
 
-    override suspend fun deleteUser(id: String): Boolean {
+    override suspend fun deleteUser(id: Int): Boolean {
         return dbQuery {
             UserTable.deleteWhere { UserTable.id eq id } > 0
         }
     }
 
     override suspend fun updateUser(
-        id: String,
+        id: Int,
         username: String?,
         password: String?,
         profilePicUrl: String?

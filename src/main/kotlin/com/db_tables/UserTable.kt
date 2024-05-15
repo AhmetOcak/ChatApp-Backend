@@ -3,7 +3,7 @@ package com.db_tables
 import org.jetbrains.exposed.sql.Table
 
 object UserTable : Table() {
-    val id = varchar("id", 128)
+    val id = integer("id").autoIncrement()
     val username = varchar("username", 128)
     val email = varchar("email", 128)
     val password = varchar("password", 128)

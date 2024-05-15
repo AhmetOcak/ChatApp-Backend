@@ -16,12 +16,14 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureSockets()
+    val messagesDao = MessagesDaoImpl()
+
+    configureSockets(messagesDao = messagesDao)
     configureSerialization()
     configureDatabases()
     configureUserRouting(userDao = UserDaoImpl())
     configureChatRooms(chatRoomDao = ChatRoomsDaoImpl())
-    configureMessageRouting(messagesDao = MessagesDaoImpl())
+    configureMessageRouting(messagesDao = messagesDao)
     configureUserChatRoomsRouting(
         userChatRoomsDao = UserChatRoomsDaoImpl(),
         getRoom = ChatRoomsDaoImpl()::getById

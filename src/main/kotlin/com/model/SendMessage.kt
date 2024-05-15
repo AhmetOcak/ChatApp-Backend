@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SendMessage(
-    val senderId: String,
+    val senderId: Int,
     val senderName: String,
     val senderImage: String?,
     val receiverId: String,
@@ -14,27 +14,17 @@ data class SendMessage(
 
 @Serializable
 data class ReceiveMessage(
-    val senderId: String,
+    val senderId: Int,
     val senderName: String,
     val senderImage: String?,
     val content: String,
     val time: String
 )
 
-fun SendMessage.toReceiveMessage(): ReceiveMessage {
-    return ReceiveMessage(
-        senderId = senderId,
-        senderName = senderName,
-        senderImage = senderImage,
-        content = content,
-        time = time
-    )
-}
-
 @Serializable
 data class Message(
-    val id: Int,
-    val senderId: String,
+    val id: Int = 0,
+    val senderId: Int,
     val senderProfilePicUrl: String?,
     val roomId: Int,
     val messageText: String,
