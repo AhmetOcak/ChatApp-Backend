@@ -52,5 +52,16 @@ fun Application.configureUserChatRoomsRouting(
                 call.respond(HttpStatusCode.InternalServerError, e.stackTraceToString())
             }
         }
+
+        get("/$BASE/getUserRooms/{userId}") {
+            try {
+                val userId = call.parameters["userId"]?.toInt() ?: return@get
+                val userRooms = userChatRoomsDao.getUserRooms(userId)
+
+                call.respond(HttpStatusCode.OK, userRooms)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.stackTraceToString())
+            }
+        }
     }
 }

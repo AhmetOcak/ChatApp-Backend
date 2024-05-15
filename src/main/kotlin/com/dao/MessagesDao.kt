@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.ResultRow
 interface MessagesDao {
     suspend fun create(
         senderId: Int,
-        senderProfilePicUrl: String,
+        senderProfilePicUrl: String?,
         roomId: Int,
         messageText: String
     ): Message?

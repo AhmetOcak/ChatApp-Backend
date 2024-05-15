@@ -1,14 +1,13 @@
 package com.core
 
-import com.model.ReceiveMessage
-import com.model.SendMessage
+import com.model.Message
+import com.model.ReceivedMessage
 
-fun SendMessage.toReceiveMessage(): ReceiveMessage {
-    return ReceiveMessage(
+fun ReceivedMessage.toMessage(): Message {
+    return Message(
         senderId = senderId,
-        senderName = senderName,
-        senderImage = senderImage,
-        content = content,
-        time = time
+        senderProfilePicUrl = senderImage,
+        roomId = receiverId,
+        messageText = content
     )
 }

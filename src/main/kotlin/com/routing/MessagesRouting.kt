@@ -20,7 +20,7 @@ fun Application.configureMessageRouting(messagesDao: MessagesDao) {
             try {
                 val formParameters = call.receiveParameters()
                 val senderId = formParameters.getOrFail("senderId").toInt()
-                val senderProfilePicUrl = formParameters.getOrFail("senderProfilePicUrl")
+                val senderProfilePicUrl = formParameters["senderProfilePicUrl"]
                 val roomId = formParameters.getOrFail<Int>("roomId")
                 val messageText = formParameters.getOrFail("messageText")
 

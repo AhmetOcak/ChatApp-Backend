@@ -71,9 +71,9 @@ fun Application.configureChatRooms(chatRoomDao: ChatRoomsDaoImpl) {
                 )
 
                 if (isUpdated) {
-                    call.respond(HttpStatusCode.OK, message = "Chat room name updated.")
+                    call.respond(HttpStatusCode.OK, message = "Chat room updated.")
                 } else {
-                    call.respond(HttpStatusCode.InternalServerError, message = "Chat room name not updated.")
+                    call.respond(HttpStatusCode.InternalServerError, message = "Chat room not updated.")
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, message = e.stackTraceToString())

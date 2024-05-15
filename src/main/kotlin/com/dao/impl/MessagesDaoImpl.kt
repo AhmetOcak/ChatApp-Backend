@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.select
 class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
         senderId: Int,
-        senderProfilePicUrl: String,
+        senderProfilePicUrl: String?,
         roomId: Int,
         messageText: String
     ): Message? = dbQuery {
