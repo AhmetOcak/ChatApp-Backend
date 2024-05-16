@@ -7,16 +7,14 @@ interface UserDao {
     suspend fun create(
         email: String,
         username: String,
-        password: String,
         profilePicUrl: String?
     ): User?
 
-    suspend fun getById(id: Int): User?
+    suspend fun getByEmail(email: String): User?
     suspend fun deleteUser(id: Int): Boolean
     suspend fun updateUser(
         id: Int,
         username: String?,
-        password: String?,
         profilePicUrl: String?
     ): Boolean
     fun rowTo(row: ResultRow): User

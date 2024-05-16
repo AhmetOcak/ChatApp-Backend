@@ -18,10 +18,10 @@ private const val BASE = "user"
 fun Application.configureUserRouting(userDao: UserDaoImpl) {
     routing {
 
-        get("/$BASE/getUser/{userId}") {
+        get("/$BASE/getUser/{userEmail}") {
             try {
-                val userId = call.parameters["userId"]?.toInt() ?: return@get
-                val user = userDao.getById(userId)
+                val userEmail = call.parameters["userEmail"] ?: return@get
+                val user = userDao.getByEmail(userEmail)
 
                 if (user == null) {
                     call.respond(HttpStatusCode.NotFound, message = "User not found.")
@@ -38,10 +38,9 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 val formParameters = call.receiveParameters()
                 val username = formParameters.getOrFail("username")
                 val email = formParameters.getOrFail("email")
-                val password = formParameters.getOrFail("password")
                 val profilePicUrl = formParameters["profilePicUrl"]
 
-                if (username.isBlank() || email.isBlank() || password.isBlank() || profilePicUrl?.isBlank() == false) {
+                if (username.isBlank() || email.isBlank() || profilePicUrl?.isBlank() == true) {
                     throw IllegalArgumentException("Parameters must not be blank")
                 }
                 if (!email.isValidEmail()) {
@@ -51,7 +50,6 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 val user = userDao.create(
                     username = username,
                     email = email,
-                    password = password,
                     profilePicUrl = profilePicUrl
                 )
 
@@ -88,17 +86,15 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
 
                 val formParameters = call.receiveParameters()
                 val username = formParameters["username"]
-                val password = formParameters["password"]
                 val profilePicUrl = formParameters["profilePicUrl"]
 
-                if (username?.isBlank() == true || password?.isBlank() == true || profilePicUrl?.isBlank() == true) {
+                if (username?.isBlank() == true || profilePicUrl?.isBlank() == true) {
                     throw IllegalArgumentException("Parameters must not be blank")
                 }
 
                 val isUpdated = userDao.updateUser(
                     id = id,
                     username = username,
-                    password = password,
                     profilePicUrl = profilePicUrl
                 )
 

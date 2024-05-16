@@ -7,26 +7,24 @@ import com.model.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class UserDaoImpl() : UserDao {
+class UserDaoImpl : UserDao {
     override suspend fun create(
         email: String,
         username: String,
-        password: String,
         profilePicUrl: String?
     ): User? =
         dbQuery {
             val insertStatement = UserTable.insert {
                 it[UserTable.email] = email
                 it[UserTable.username] = username
-                it[UserTable.password] = password
                 it[UserTable.profilePicUrl] = profilePicUrl
             }
             insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
         }
 
-    override suspend fun getById(id: Int): User? {
+    override suspend fun getByEmail(email: String): User? {
         return dbQuery {
-            UserTable.select { UserTable.id eq id }
+            UserTable.select { UserTable.email eq email }
                 .map { rowTo(it) }
                 .singleOrNull()
         }
@@ -41,13 +39,11 @@ class UserDaoImpl() : UserDao {
     override suspend fun updateUser(
         id: Int,
         username: String?,
-        password: String?,
         profilePicUrl: String?
     ): Boolean {
         return dbQuery {
             UserTable.update({ UserTable.id eq id } ) { updateStatement ->
                 username?.let { updateStatement[UserTable.username] = it }
-                password?.let { updateStatement[UserTable.password] = it }
                 profilePicUrl?.let { updateStatement[UserTable.profilePicUrl] = it }
             } > 0
         }
@@ -57,7 +53,6 @@ class UserDaoImpl() : UserDao {
         return User(
             id = row[UserTable.id],
             email = row[UserTable.email],
-            password = row[UserTable.password],
             username = row[UserTable.username],
             profilePicUrl = row[UserTable.profilePicUrl]
         )
