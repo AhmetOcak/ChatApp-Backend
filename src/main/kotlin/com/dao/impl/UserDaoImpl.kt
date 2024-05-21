@@ -30,19 +30,19 @@ class UserDaoImpl : UserDao {
         }
     }
 
-    override suspend fun deleteUser(id: Int): Boolean {
+    override suspend fun deleteUser(email: String): Boolean {
         return dbQuery {
-            UserTable.deleteWhere { UserTable.id eq id } > 0
+            UserTable.deleteWhere { UserTable.email eq email } > 0
         }
     }
 
     override suspend fun updateUser(
-        id: Int,
+        userEmail: String,
         username: String?,
         profilePicUrl: String?
     ): Boolean {
         return dbQuery {
-            UserTable.update({ UserTable.id eq id } ) { updateStatement ->
+            UserTable.update({ UserTable.email eq userEmail } ) { updateStatement ->
                 username?.let { updateStatement[UserTable.username] = it }
                 profilePicUrl?.let { updateStatement[UserTable.profilePicUrl] = it }
             } > 0

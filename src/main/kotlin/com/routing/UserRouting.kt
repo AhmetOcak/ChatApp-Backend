@@ -65,13 +65,13 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
             }
         }
 
-        delete("/$BASE/deleteUser/{userId}") {
+        delete("/$BASE/deleteUser/{userEmail}") {
             try {
-                val userId = call.parameters["userId"]?.toInt() ?: return@delete
-                val isDeleted = userDao.deleteUser(userId)
+                val userEmail = call.parameters["userEmail"] ?: return@delete
+                val isDeleted = userDao.deleteUser(userEmail)
 
                 if (isDeleted) {
-                    call.respond(HttpStatusCode.NoContent)
+                    call.respond(HttpStatusCode.OK, message = "User deleted.")
                 } else {
                     call.respond(HttpStatusCode.NotFound, message = "User not found.")
                 }
@@ -80,9 +80,9 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
             }
         }
 
-        put("/$BASE/updateUser/{userId}") {
+        put("/$BASE/updateUser/{userEmail}") {
             try {
-                val id = call.parameters["userId"]?.toInt() ?: return@put
+                val userEmail = call.parameters["userEmail"] ?: return@put
 
                 val formParameters = call.receiveParameters()
                 val username = formParameters["username"]
@@ -93,7 +93,7 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 }
 
                 val isUpdated = userDao.updateUser(
-                    id = id,
+                    userEmail = userEmail,
                     username = username,
                     profilePicUrl = profilePicUrl
                 )

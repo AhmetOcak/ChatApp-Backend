@@ -11,9 +11,9 @@ interface UserDao {
     ): User?
 
     suspend fun getByEmail(email: String): User?
-    suspend fun deleteUser(id: Int): Boolean
+    suspend fun deleteUser(email: String): Boolean
     suspend fun updateUser(
-        id: Int,
+        userEmail: String,
         username: String?,
         profilePicUrl: String?
     ): Boolean
