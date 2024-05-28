@@ -10,11 +10,12 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 
 class FriendDaoImpl : FriendDao {
-    override suspend fun create(userEmail1: String, userEmail2: String): Friend? {
+    override suspend fun create(userEmail: String, friendEmail: String, friendProfPicUrl: String?): Friend? {
         return dbQuery {
             val insertStatement = FriendTable.insert {
-                it[FriendTable.user_email1] = userEmail1
-                it[FriendTable.user_email2] = userEmail2
+                it[FriendTable.userEmail] = userEmail
+                it[FriendTable.friendEmail] = friendEmail
+                it[FriendTable.friendProfilePicUrl] = friendProfPicUrl
             }
             insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
         }
@@ -22,7 +23,7 @@ class FriendDaoImpl : FriendDao {
 
     override suspend fun getByEmail(userEmail: String): List<Friend> {
         return dbQuery {
-            FriendTable.select { (FriendTable.user_email1 eq userEmail) or (FriendTable.user_email2 eq userEmail) }
+            FriendTable.select { (FriendTable.userEmail eq userEmail) or (FriendTable.friendEmail eq userEmail) }
                 .map { rowTo(it) }
         }
     }
@@ -30,8 +31,9 @@ class FriendDaoImpl : FriendDao {
     override fun rowTo(row: ResultRow): Friend {
         return Friend(
             id = row[FriendTable.id],
-            userEmail1 = row[FriendTable.user_email1],
-            userEmail2 = row[FriendTable.user_email2]
+            userEmail = row[FriendTable.userEmail],
+            friendEmail = row[FriendTable.friendEmail],
+            friendProfilePicUrl = row[FriendTable.friendProfilePicUrl]
         )
     }
 }

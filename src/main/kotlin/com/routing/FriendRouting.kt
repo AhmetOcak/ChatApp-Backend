@@ -2,6 +2,7 @@ package com.routing
 
 import com.core.isValidEmail
 import com.dao.FriendDao
+import com.dao.UserDao
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,20 +13,24 @@ import java.lang.IllegalArgumentException
 
 private const val BASE = "friend"
 
-fun Application.configureFriendRouting(friendDao: FriendDao) {
+fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
     routing {
 
         post("/$BASE/create") {
             try {
                 val formParameters = call.receiveParameters()
-                val userEmail1 = formParameters.getOrFail("currentUserEmail")
-                val userEmail2 = formParameters.getOrFail("friendEmail")
+                val currentUserEmail = formParameters.getOrFail("currentUserEmail")
+                val friendEmail = formParameters.getOrFail("friendEmail")
 
-                if (!userEmail1.isValidEmail() || !userEmail2.isValidEmail()) {
+                if (!currentUserEmail.isValidEmail() || !friendEmail.isValidEmail()) {
                     throw IllegalArgumentException("Email is not valid")
                 }
 
-                val friend = friendDao.create(userEmail1 = userEmail1, userEmail2 = userEmail2)
+                val friend = friendDao.create(
+                    userEmail = currentUserEmail,
+                    friendEmail = friendEmail,
+                    friendProfPicUrl = userDao.getByEmail(friendEmail)?.profilePicUrl
+                )
 
                 if (friend == null) {
                     throw java.lang.Exception("Error occurred while creating friend.")
