@@ -1,14 +1,8 @@
 package com
 
-import com.dao.impl.ChatRoomsDaoImpl
-import com.dao.impl.MessagesDaoImpl
-import com.dao.impl.UserChatRoomsDaoImpl
-import com.dao.impl.UserDaoImpl
+import com.dao.impl.*
 import com.plugins.*
-import com.routing.configureChatRooms
-import com.routing.configureMessageRouting
-import com.routing.configureUserChatRoomsRouting
-import com.routing.configureUserRouting
+import com.routing.*
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -22,10 +16,15 @@ fun Application.module() {
     configureSerialization()
     configureDatabases()
     configureUserRouting(userDao = UserDaoImpl())
-    configureChatRooms(chatRoomDao = ChatRoomsDaoImpl())
+    configureChatRooms(
+        chatRoomDao = ChatRoomsDaoImpl(),
+        addUserToChatRoom = UserChatRoomsDaoImpl()::addUserToRoom,
+        getUser = UserDaoImpl()::getByEmail
+    )
     configureMessageRouting(messagesDao = messagesDao)
     configureUserChatRoomsRouting(
         userChatRoomsDao = UserChatRoomsDaoImpl(),
         getRoom = ChatRoomsDaoImpl()::getById
     )
+    configureFriendRouting(friendDao = FriendDaoImpl(), userDao = UserDaoImpl())
 }

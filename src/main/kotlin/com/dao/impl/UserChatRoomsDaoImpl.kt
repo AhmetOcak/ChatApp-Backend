@@ -8,32 +8,32 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class UserChatRoomsDaoImpl : UserChatRoomsDao {
-    override suspend fun addUserToRoom(userId: Int, roomId: Int): Int? = dbQuery {
+    override suspend fun addUserToRoom(userEmail: String, roomId: Int): Int? = dbQuery {
         val insertStatement = UserChatRoomsTable.insert {
-            it[UserChatRoomsTable.userId] = userId
+            it[UserChatRoomsTable.userEmail] = userEmail
             it[UserChatRoomsTable.roomId] = roomId
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)?.roomId
     }
 
-    override suspend fun removeUserFromRoom(userId: Int, roomId: Int): Boolean {
+    override suspend fun removeUserFromRoom(userEmail: String, roomId: Int): Boolean {
         return dbQuery {
             UserChatRoomsTable.deleteWhere {
-                (UserChatRoomsTable.userId eq userId) and (UserChatRoomsTable.roomId eq roomId)
+                (UserChatRoomsTable.userEmail eq userEmail) and (UserChatRoomsTable.roomId eq roomId)
             } > 0
         }
     }
 
-    override suspend fun getUserRooms(userId: Int): List<Int> {
+    override suspend fun getUserRooms(userEmail: String): List<Int> {
         return dbQuery {
-            UserChatRoomsTable.select { UserChatRoomsTable.userId eq userId }
+            UserChatRoomsTable.select { UserChatRoomsTable.userEmail eq userEmail }
                 .map { it[UserChatRoomsTable.roomId] }
         }
     }
 
     override fun rowTo(row: ResultRow): UserChatRooms {
         return UserChatRooms(
-            userId = row[UserChatRoomsTable.userId],
+            userEmail = row[UserChatRoomsTable.userEmail],
             roomId = row[UserChatRoomsTable.roomId]
         )
     }

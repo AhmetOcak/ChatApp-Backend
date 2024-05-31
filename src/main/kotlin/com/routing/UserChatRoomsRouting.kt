@@ -15,12 +15,12 @@ fun Application.configureUserChatRoomsRouting(
 ) {
     routing {
 
-        post("/$BASE/addUserToRoom/{userId}/{roomId}") {
+        post("/$BASE/addUserToRoom/{userEmail}/{roomId}") {
             try {
-                val userId = call.parameters["userId"]?.toInt() ?: return@post
+                val userEmail = call.parameters["userEmail"] ?: return@post
                 val roomId = call.parameters["roomId"]?.toInt() ?: return@post
 
-                val userRoomId = userChatRoomsDao.addUserToRoom(userId = userId, roomId = roomId)
+                val userRoomId = userChatRoomsDao.addUserToRoom(userEmail = userEmail, roomId = roomId)
 
                 if (userRoomId != null) {
                     val chatRoom = getRoom(userRoomId)
@@ -33,12 +33,12 @@ fun Application.configureUserChatRoomsRouting(
             }
         }
 
-        put("/$BASE/removeUserFromRoom/{userId}/{roomId}") {
+        put("/$BASE/removeUserFromRoom/{userEmail}/{roomId}") {
             try {
-                val userId = call.parameters["userId"]?.toInt() ?: return@put
+                val userEmail = call.parameters["userEmail"] ?: return@put
                 val roomId = call.parameters["roomId"]?.toInt() ?: return@put
 
-                val isRemoved = userChatRoomsDao.removeUserFromRoom(userId = userId, roomId = roomId)
+                val isRemoved = userChatRoomsDao.removeUserFromRoom(userEmail = userEmail, roomId = roomId)
 
                 if (isRemoved) {
                     call.respond(HttpStatusCode.OK, message = "User removed from chat room successfully.")
@@ -53,10 +53,10 @@ fun Application.configureUserChatRoomsRouting(
             }
         }
 
-        get("/$BASE/getUserRooms/{userId}") {
+        get("/$BASE/getUserRooms/{userEmail}") {
             try {
-                val userId = call.parameters["userId"]?.toInt() ?: return@get
-                val userRooms = userChatRoomsDao.getUserRooms(userId)
+                val userEmail = call.parameters["userEmail"] ?: return@get
+                val userRooms = userChatRoomsDao.getUserRooms(userEmail)
 
                 call.respond(HttpStatusCode.OK, userRooms)
             } catch (e: Exception) {
