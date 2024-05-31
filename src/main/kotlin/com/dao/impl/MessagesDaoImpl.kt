@@ -5,6 +5,7 @@ import com.db_tables.MessagesTable
 import com.factory.DatabaseFactory.dbQuery
 import com.model.Message
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
@@ -27,13 +28,11 @@ class MessagesDaoImpl : MessagesDao {
         pageSize: Int
     ): List<Message> {
         return dbQuery {
-            MessagesTable.select {
-                (MessagesTable.senderEmail eq senderEmail) and (MessagesTable.receiverEmail eq receiverEmail)
-            }.unionAll(
-                MessagesTable.select {
-                    (MessagesTable.senderEmail eq receiverEmail) and (MessagesTable.receiverEmail eq senderEmail)
-                }
-            ).limit(pageSize, offset = (page * pageSize).toLong())
+            MessagesTable.select(
+                ((MessagesTable.senderEmail eq senderEmail) and (MessagesTable.receiverEmail eq receiverEmail))
+                        or ((MessagesTable.senderEmail eq receiverEmail) and (MessagesTable.receiverEmail eq senderEmail))
+            ).orderBy(MessagesTable.sentAt to SortOrder.DESC)
+                .limit(pageSize, offset = (page * pageSize).toLong())
                 .map { rowTo(it) }
         }
     }
