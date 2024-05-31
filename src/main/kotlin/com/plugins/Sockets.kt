@@ -1,10 +1,11 @@
 package com.plugins
 
-import com.core.toReceiveMessage
 import com.dao.MessagesDao
-import com.model.SendMessage
+import com.model.Message
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.isActive
@@ -19,20 +20,31 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
     routing {
         val connections = mutableMapOf<String, WebSocketServerSession>()
 
-        webSocket("/chat/{userId}") {
-            val userId = call.parameters["userId"] ?: return@webSocket
-            connections[userId] = this
+        webSocket("/chat/{userEmail}") {
+            val userEmail = call.parameters["userEmail"] ?: return@webSocket
+            connections[userEmail] = this
 
             try {
                 while (coroutineContext.isActive) {
                     // Deserialize message
-                    val receivedMessage = receiveDeserialized<SendMessage>()
+                    val receivedMessage = receiveDeserialized<Message>()
 
-                    // Broadcast message to specific client
-                    connections[receivedMessage.receiverId]?.sendSerialized(receivedMessage.toReceiveMessage())
+                    val message = messagesDao.create(
+                        senderEmail = receivedMessage.senderEmail,
+                        receiverEmail = receivedMessage.receiverEmail,
+                        messageText = receivedMessage.messageText
+                    )
+
+                    if (message == null) {
+                        call.respond(HttpStatusCode.InternalServerError, message = "Message could not be send.")
+                    } else {
+                        // Broadcast message to specific client
+                        connections[message.senderEmail]?.sendSerialized(message)
+                        connections[message.receiverEmail]?.sendSerialized(message)
+                    }
                 }
             } catch (e: Exception) {
-                println("Error: ${e.localizedMessage}")
+                call.respond(HttpStatusCode.InternalServerError, e.stackTraceToString())
             }
         }
     }
