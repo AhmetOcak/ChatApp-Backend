@@ -11,7 +11,6 @@ import io.ktor.server.websocket.*
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 
-// TODO: Bir client tarafından mesaj içeriği aynı olan mesajlar arka arkaya gönderilemiyor.
 // TODO: Bağlantı sayısı 1 olduğunda son bağlantıda mesaj gönderdiğinde bağlantı otomatik sonlanıyor.
 fun Application.configureSockets(messagesDao: MessagesDao) {
     install(WebSockets) {
@@ -32,7 +31,8 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
                     val message = messagesDao.create(
                         senderEmail = receivedMessage.senderEmail,
                         receiverEmail = receivedMessage.receiverEmail,
-                        messageText = receivedMessage.messageText
+                        messageText = receivedMessage.messageText,
+                        senderImgUrl = receivedMessage.senderImgUrl
                     )
 
                     if (message == null) {

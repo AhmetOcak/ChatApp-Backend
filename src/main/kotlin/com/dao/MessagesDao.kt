@@ -7,7 +7,8 @@ interface MessagesDao {
     suspend fun create(
         senderEmail: String,
         receiverEmail: String,
-        messageText: String
+        messageText: String,
+        senderImgUrl: String?
     ): Message?
 
     suspend fun getById(

@@ -10,6 +10,7 @@ object MessagesTable : Table() {
     val senderEmail = varchar("sender_email", 128).references(UserTable.email, onDelete = ReferenceOption.CASCADE)
     val receiverEmail = varchar("receiver_email", 128).references(UserTable.email, onDelete = ReferenceOption.CASCADE)
     val messageText = text("message_text")
+    val senderImgUrl = varchar("sender_img_url", 256).nullable()
     val sentAt = datetime("sent_at").clientDefault { LocalDateTime.now() }
 
     override val primaryKey = PrimaryKey(id)

@@ -11,12 +11,14 @@ class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
         senderEmail: String,
         receiverEmail: String,
-        messageText: String
+        messageText: String,
+        senderImgUrl: String?
     ): Message? = dbQuery {
         val insertStatement = MessagesTable.insert {
             it[MessagesTable.senderEmail] = senderEmail
             it[MessagesTable.receiverEmail] = receiverEmail
             it[MessagesTable.messageText] = messageText
+            it[MessagesTable.senderImgUrl] = senderImgUrl
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
     }
@@ -60,7 +62,8 @@ class MessagesDaoImpl : MessagesDao {
             senderEmail = row[MessagesTable.senderEmail],
             receiverEmail = row[MessagesTable.receiverEmail],
             messageText = row[MessagesTable.messageText],
-            sentAt = row[MessagesTable.sentAt].toString()
+            sentAt = row[MessagesTable.sentAt].toString(),
+            senderImgUrl = row[MessagesTable.senderImgUrl]
         )
     }
 }
