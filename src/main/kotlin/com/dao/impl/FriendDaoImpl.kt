@@ -10,11 +10,17 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 
 class FriendDaoImpl : FriendDao {
-    override suspend fun create(userEmail: String, friendEmail: String, friendProfPicUrl: String?): Friend? {
+    override suspend fun create(
+        userEmail: String,
+        friendEmail: String,
+        friendUsername: String,
+        friendProfPicUrl: String?
+    ): Friend? {
         return dbQuery {
             val insertStatement = FriendTable.insert {
                 it[FriendTable.userEmail] = userEmail
                 it[FriendTable.friendEmail] = friendEmail
+                it[FriendTable.friendUsername] = friendUsername
                 it[FriendTable.friendProfilePicUrl] = friendProfPicUrl
             }
             insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
@@ -33,7 +39,8 @@ class FriendDaoImpl : FriendDao {
             id = row[FriendTable.id],
             userEmail = row[FriendTable.userEmail],
             friendEmail = row[FriendTable.friendEmail],
-            friendProfilePicUrl = row[FriendTable.friendProfilePicUrl]
+            friendProfilePicUrl = row[FriendTable.friendProfilePicUrl],
+            friendUsername = row[FriendTable.friendUsername]
         )
     }
 }

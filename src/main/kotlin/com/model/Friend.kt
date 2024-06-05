@@ -7,5 +7,6 @@ data class Friend(
     val id: Int,
     val userEmail: String,
     val friendEmail: String,
+    val friendUsername: String,
     val friendProfilePicUrl: String?
 )

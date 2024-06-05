@@ -32,7 +32,8 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
                         senderEmail = receivedMessage.senderEmail,
                         receiverEmail = receivedMessage.receiverEmail,
                         messageText = receivedMessage.messageText,
-                        senderImgUrl = receivedMessage.senderImgUrl
+                        senderImgUrl = receivedMessage.senderImgUrl,
+                        senderUsername = receivedMessage.senderUsername
                     )
 
                     if (message == null) {

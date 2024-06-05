@@ -26,10 +26,13 @@ fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
                     throw IllegalArgumentException("Email is not valid")
                 }
 
+                val friendAccount = userDao.getByEmail(friendEmail)
+
                 val friend = friendDao.create(
                     userEmail = currentUserEmail,
                     friendEmail = friendEmail,
-                    friendProfPicUrl = userDao.getByEmail(friendEmail)?.profilePicUrl
+                    friendProfPicUrl = friendAccount?.profilePicUrl,
+                    friendUsername = friendAccount?.username ?: ""
                 )
 
                 if (friend == null) {

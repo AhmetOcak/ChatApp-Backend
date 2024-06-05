@@ -9,7 +9,8 @@ data class Message(
     val receiverEmail: String,
     val messageText: String,
     val sentAt: String = "",
-    val senderImgUrl: String?
+    val senderImgUrl: String?,
+    val senderUsername: String
 )
 
 @Serializable

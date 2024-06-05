@@ -12,13 +12,15 @@ class MessagesDaoImpl : MessagesDao {
         senderEmail: String,
         receiverEmail: String,
         messageText: String,
-        senderImgUrl: String?
+        senderImgUrl: String?,
+        senderUsername: String
     ): Message? = dbQuery {
         val insertStatement = MessagesTable.insert {
             it[MessagesTable.senderEmail] = senderEmail
             it[MessagesTable.receiverEmail] = receiverEmail
             it[MessagesTable.messageText] = messageText
             it[MessagesTable.senderImgUrl] = senderImgUrl
+            it[MessagesTable.senderUsername] = senderUsername
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
     }
@@ -63,7 +65,8 @@ class MessagesDaoImpl : MessagesDao {
             receiverEmail = row[MessagesTable.receiverEmail],
             messageText = row[MessagesTable.messageText],
             sentAt = row[MessagesTable.sentAt].toString(),
-            senderImgUrl = row[MessagesTable.senderImgUrl]
+            senderImgUrl = row[MessagesTable.senderImgUrl],
+            senderUsername = row[MessagesTable.senderUsername]
         )
     }
 }
