@@ -4,23 +4,27 @@ import com.dao.MessagesDao
 import com.db_tables.MessagesTable
 import com.factory.DatabaseFactory.dbQuery
 import com.model.Message
+import com.model.MessageType
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.lang.IllegalArgumentException
 
 class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
         senderEmail: String,
         receiverEmail: String,
-        messageText: String,
+        messageContent: String,
         senderImgUrl: String?,
-        senderUsername: String
+        senderUsername: String,
+        messageType: MessageType
     ): Message? = dbQuery {
         val insertStatement = MessagesTable.insert {
             it[MessagesTable.senderEmail] = senderEmail
             it[MessagesTable.receiverEmail] = receiverEmail
-            it[MessagesTable.messageText] = messageText
+            it[MessagesTable.messageContent] = messageContent
             it[MessagesTable.senderImgUrl] = senderImgUrl
             it[MessagesTable.senderUsername] = senderUsername
+            it[MessagesTable.messageType] = messageType.name
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowTo)
     }
@@ -63,10 +67,20 @@ class MessagesDaoImpl : MessagesDao {
             id = row[MessagesTable.id],
             senderEmail = row[MessagesTable.senderEmail],
             receiverEmail = row[MessagesTable.receiverEmail],
-            messageText = row[MessagesTable.messageText],
+            messageContent = row[MessagesTable.messageContent],
             sentAt = row[MessagesTable.sentAt].toString(),
             senderImgUrl = row[MessagesTable.senderImgUrl],
-            senderUsername = row[MessagesTable.senderUsername]
+            senderUsername = row[MessagesTable.senderUsername],
+            messageType = row[MessagesTable.messageType].toMessageType()
         )
+    }
+}
+
+private fun String.toMessageType(): MessageType {
+    return when (this.uppercase()) {
+        MessageType.TEXT.name -> MessageType.TEXT
+        MessageType.AUDIO.name -> MessageType.AUDIO
+        MessageType.IMAGE.name -> MessageType.IMAGE
+        else -> throw IllegalArgumentException("Wrong message type $this")
     }
 }

@@ -1,15 +1,17 @@
 package com.dao
 
 import com.model.Message
+import com.model.MessageType
 import org.jetbrains.exposed.sql.ResultRow
 
 interface MessagesDao {
     suspend fun create(
         senderEmail: String,
         receiverEmail: String,
-        messageText: String,
+        messageContent: String,
         senderImgUrl: String?,
-        senderUsername: String
+        senderUsername: String,
+        messageType: MessageType
     ): Message?
 
     suspend fun getById(

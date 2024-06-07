@@ -31,9 +31,10 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
                     val message = messagesDao.create(
                         senderEmail = receivedMessage.senderEmail,
                         receiverEmail = receivedMessage.receiverEmail,
-                        messageText = receivedMessage.messageText,
+                        messageContent = receivedMessage.messageContent,
                         senderImgUrl = receivedMessage.senderImgUrl,
-                        senderUsername = receivedMessage.senderUsername
+                        senderUsername = receivedMessage.senderUsername,
+                        messageType = receivedMessage.messageType
                     )
 
                     if (message == null) {
