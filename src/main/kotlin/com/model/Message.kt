@@ -23,5 +23,6 @@ data class PaginatedMessages(
 enum class MessageType {
     TEXT,
     AUDIO,
-    IMAGE
+    IMAGE,
+    DOC
 }
