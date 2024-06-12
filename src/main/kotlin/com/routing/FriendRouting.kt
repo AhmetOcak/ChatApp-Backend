@@ -3,6 +3,7 @@ package com.routing
 import com.core.isValidEmail
 import com.dao.FriendDao
 import com.dao.UserDao
+import com.model.Friend
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -51,6 +52,19 @@ fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
             try {
                 val userEmail = call.parameters["userEmail"] ?: return@get
                 val friendList = friendDao.getByEmail(userEmail)
+
+                if (friendList.firstOrNull()?.friendEmail == userEmail) {
+                    val reFriendList = friendList.map {
+                        Friend(
+                            id = it.id,
+                            userEmail = userEmail,
+                            friendEmail = it.userEmail,
+                            friendProfilePicUrl = userDao.getByEmail(it.userEmail)?.profilePicUrl,
+                            friendUsername = userDao.getByEmail(it.userEmail)?.username!!
+                        )
+                    }
+                    call.respond(HttpStatusCode.OK, message = reFriendList)
+                }
 
                 call.respond(HttpStatusCode.OK, message = friendList)
             } catch (e: Exception) {
