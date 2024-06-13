@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 interface MessagesDao {
     suspend fun create(
+        friendshipId: Int,
         senderEmail: String,
         receiverEmail: String,
         messageContent: String,
@@ -15,15 +16,13 @@ interface MessagesDao {
     ): Message?
 
     suspend fun getById(
-        senderEmail: String,
-        receiverEmail: String,
+        friendshipId: Int,
         page: Int,
         pageSize: Int
     ): List<Message>
 
     suspend fun getTotalItems(
-        senderEmail: String,
-        receiverEmail: String,
+        friendshipId: Int,
         pageSize: Int
     ): Long
 

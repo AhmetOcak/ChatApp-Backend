@@ -59,8 +59,8 @@ fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
                             id = it.id,
                             userEmail = userEmail,
                             friendEmail = it.userEmail,
-                            friendProfilePicUrl = userDao.getByEmail(it.userEmail)?.profilePicUrl,
-                            friendUsername = userDao.getByEmail(it.userEmail)?.username!!
+                            friendProfilePicUrl = it.userEmail?.let { it1 -> userDao.getByEmail(it1)?.profilePicUrl },
+                            friendUsername = it.userEmail?.let { it1 -> userDao.getByEmail(it1)?.username }
                         )
                     }
                     call.respond(HttpStatusCode.OK, message = reFriendList)

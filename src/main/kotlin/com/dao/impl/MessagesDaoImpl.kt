@@ -11,6 +11,7 @@ import java.lang.IllegalArgumentException
 
 class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
+        friendshipId: Int,
         senderEmail: String,
         receiverEmail: String,
         messageContent: String,
@@ -19,6 +20,7 @@ class MessagesDaoImpl : MessagesDao {
         messageType: MessageType
     ): Message? = dbQuery {
         val insertStatement = MessagesTable.insert {
+            it[MessagesTable.friendshipId] = friendshipId
             it[MessagesTable.senderEmail] = senderEmail
             it[MessagesTable.receiverEmail] = receiverEmail
             it[MessagesTable.messageContent] = messageContent
@@ -30,15 +32,13 @@ class MessagesDaoImpl : MessagesDao {
     }
 
     override suspend fun getById(
-        senderEmail: String,
-        receiverEmail: String,
+        friendshipId: Int,
         page: Int,
         pageSize: Int
     ): List<Message> {
         return dbQuery {
             MessagesTable.select(
-                ((MessagesTable.senderEmail eq senderEmail) and (MessagesTable.receiverEmail eq receiverEmail))
-                        or ((MessagesTable.senderEmail eq receiverEmail) and (MessagesTable.receiverEmail eq senderEmail))
+                MessagesTable.friendshipId eq friendshipId
             ).orderBy(MessagesTable.sentAt to SortOrder.DESC)
                 .limit(pageSize, offset = (page * pageSize).toLong())
                 .map { rowTo(it) }
@@ -46,17 +46,12 @@ class MessagesDaoImpl : MessagesDao {
     }
 
     override suspend fun getTotalItems(
-        senderEmail: String,
-        receiverEmail: String,
+        friendshipId: Int,
         pageSize: Int
     ): Long {
         return dbQuery {
-            val count = MessagesTable.select {
-                (MessagesTable.senderEmail eq senderEmail) and (MessagesTable.receiverEmail eq receiverEmail)
-            }.union(
-                MessagesTable.select {
-                    (MessagesTable.senderEmail eq receiverEmail) and (MessagesTable.receiverEmail eq senderEmail)
-                }
+            val count = MessagesTable.select(
+                MessagesTable.friendshipId eq friendshipId
             ).count()
             count / pageSize
         }
@@ -65,6 +60,7 @@ class MessagesDaoImpl : MessagesDao {
     override fun rowTo(row: ResultRow): Message {
         return Message(
             id = row[MessagesTable.id],
+            friendshipId = row[MessagesTable.friendshipId],
             senderEmail = row[MessagesTable.senderEmail],
             receiverEmail = row[MessagesTable.receiverEmail],
             messageContent = row[MessagesTable.messageContent],

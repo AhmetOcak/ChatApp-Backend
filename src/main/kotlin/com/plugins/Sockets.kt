@@ -29,6 +29,7 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
                     val receivedMessage = receiveDeserialized<Message>()
 
                     val message = messagesDao.create(
+                        friendshipId = receivedMessage.friendshipId,
                         senderEmail = receivedMessage.senderEmail,
                         receiverEmail = receivedMessage.receiverEmail,
                         messageContent = receivedMessage.messageContent,

@@ -14,16 +14,14 @@ private const val PAGE_SIZE = 20
 fun Application.configureMessageRouting(messagesDao: MessagesDao) {
     routing {
 
-        get("/$BASE/getMessages/{userEmail}/{friendEmail}/{page?}") {
+        get("/$BASE/getMessages/{friendshipId}/{page?}") {
             try {
-                val userEmail = call.parameters["userEmail"] ?: return@get
-                val friendEmail = call.parameters["friendEmail"] ?: return@get
+                val friendshipId = call.parameters["friendshipId"]?.toInt() ?: return@get
                 val page = call.parameters["page"]?.toInt()
 
 
                 val totalPages = messagesDao.getTotalItems(
-                    senderEmail = userEmail,
-                    receiverEmail = friendEmail,
+                    friendshipId = friendshipId,
                     pageSize = PAGE_SIZE
                 )
 
@@ -31,8 +29,7 @@ fun Application.configureMessageRouting(messagesDao: MessagesDao) {
                     emptyList()
                 } else {
                     messagesDao.getById(
-                        senderEmail = userEmail,
-                        receiverEmail = friendEmail,
+                        friendshipId = friendshipId,
                         page = page ?: 0,
                         pageSize = PAGE_SIZE
                     )
