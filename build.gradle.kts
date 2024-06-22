@@ -32,11 +32,16 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("com.h2database:h2:2.1.214")
     implementation("io.ktor:ktor-server-netty-jvm")
+
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-admin:9.1.1")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

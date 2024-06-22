@@ -1,7 +1,10 @@
 package com.plugins
 
+import com.dao.FcmTokenDao
 import com.dao.MessagesDao
+import com.firebase.sendFcmMessage
 import com.model.Message
+import com.model.NotificationContent
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
@@ -11,8 +14,7 @@ import io.ktor.server.websocket.*
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 
-// TODO: Bağlantı sayısı 1 olduğunda son bağlantıda mesaj gönderdiğinde bağlantı otomatik sonlanıyor.
-fun Application.configureSockets(messagesDao: MessagesDao) {
+fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmTokenDao) {
     install(WebSockets) {
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
     }
@@ -44,6 +46,16 @@ fun Application.configureSockets(messagesDao: MessagesDao) {
                         // Broadcast message to specific client
                         connections[message.senderEmail]?.sendSerialized(message)
                         connections[message.receiverEmail]?.sendSerialized(message)
+
+                        fcmTokenDao.get(message.receiverEmail)?.let {
+                            sendFcmMessage(
+                                notificationContent = NotificationContent(
+                                    title = message.senderUsername,
+                                    message = message.messageContent
+                                ),
+                                token = it
+                            )
+                        }
                     }
                 }
             } catch (e: Exception) {

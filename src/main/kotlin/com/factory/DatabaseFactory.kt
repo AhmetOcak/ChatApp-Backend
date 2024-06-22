@@ -18,10 +18,11 @@ object DatabaseFactory {
         transaction (database) {
             SchemaUtils.apply {
                 create(UserTable)
-                create(ChatRoomsTable)
+                //create(ChatRoomsTable)
                 create(MessagesTable)
-                create(UserChatRoomsTable)
+                //create(UserChatRoomsTable)
                 create(FriendTable)
+                create(FcmTokenTable)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com
 
 import com.dao.impl.*
+import com.firebase.FirebaseAdmin
 import com.plugins.*
 import com.routing.*
 import io.ktor.server.application.*
@@ -12,7 +13,9 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val messagesDao = MessagesDaoImpl()
 
-    configureSockets(messagesDao = messagesDao)
+    FirebaseAdmin.init()
+
+    configureSockets(messagesDao = messagesDao, fcmTokenDao = FcmTokenDaoImpl())
     configureSerialization()
     configureDatabases()
     configureUserRouting(userDao = UserDaoImpl())
@@ -21,10 +24,11 @@ fun Application.module() {
         addUserToChatRoom = UserChatRoomsDaoImpl()::addUserToRoom,
         getUser = UserDaoImpl()::getByEmail
     )
-    configureMessageRouting(messagesDao = messagesDao)
+    configureMessageRouting(messagesDao = messagesDao, fcmTokenDao = FcmTokenDaoImpl())
     configureUserChatRoomsRouting(
         userChatRoomsDao = UserChatRoomsDaoImpl(),
         getRoom = ChatRoomsDaoImpl()::getById
     )
     configureFriendRouting(friendDao = FriendDaoImpl(), userDao = UserDaoImpl())
+    configureFcmTokenRouting(fcmTokenDao = FcmTokenDaoImpl(), userDao = UserDaoImpl())
 }
