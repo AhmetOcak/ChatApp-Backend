@@ -11,24 +11,13 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    val messagesDao = MessagesDaoImpl()
-
     FirebaseAdmin.init()
 
-    configureSockets(messagesDao = messagesDao, fcmTokenDao = FcmTokenDaoImpl())
+    configureSockets(messagesDao = MessagesDaoImpl(), fcmTokenDao = FcmTokenDaoImpl())
     configureSerialization()
     configureDatabases()
     configureUserRouting(userDao = UserDaoImpl())
-    configureChatRooms(
-        chatRoomDao = ChatRoomsDaoImpl(),
-        addUserToChatRoom = UserChatRoomsDaoImpl()::addUserToRoom,
-        getUser = UserDaoImpl()::getByEmail
-    )
-    configureMessageRouting(messagesDao = messagesDao, fcmTokenDao = FcmTokenDaoImpl())
-    configureUserChatRoomsRouting(
-        userChatRoomsDao = UserChatRoomsDaoImpl(),
-        getRoom = ChatRoomsDaoImpl()::getById
-    )
+    configureMessageRouting(messagesDao = MessagesDaoImpl(), fcmTokenDao = FcmTokenDaoImpl())
     configureFriendRouting(friendDao = FriendDaoImpl(), userDao = UserDaoImpl())
     configureFcmTokenRouting(fcmTokenDao = FcmTokenDaoImpl(), userDao = UserDaoImpl())
 }
