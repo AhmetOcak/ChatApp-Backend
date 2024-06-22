@@ -53,8 +53,8 @@ fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
                 val userEmail = call.parameters["userEmail"] ?: return@get
                 val friendList = friendDao.getByEmail(userEmail)
 
-                if (friendList.firstOrNull()?.friendEmail == userEmail) {
-                    val reFriendList = friendList.map {
+                val reFriendList = friendList.map {
+                    if (it.friendEmail == userEmail) {
                         Friend(
                             id = it.id,
                             userEmail = userEmail,
@@ -62,11 +62,12 @@ fun Application.configureFriendRouting(friendDao: FriendDao, userDao: UserDao) {
                             friendProfilePicUrl = it.userEmail?.let { it1 -> userDao.getByEmail(it1)?.profilePicUrl },
                             friendUsername = it.userEmail?.let { it1 -> userDao.getByEmail(it1)?.username }
                         )
+                    } else {
+                        it
                     }
-                    call.respond(HttpStatusCode.OK, message = reFriendList)
                 }
 
-                call.respond(HttpStatusCode.OK, message = friendList)
+                call.respond(HttpStatusCode.OK, message = reFriendList)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, message = e.stackTraceToString())
             }
