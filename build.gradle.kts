@@ -45,3 +45,9 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
+
+ktor {
+    fatJar {
+        archiveFileName.set("chat-app.jar")
+    }
+}
