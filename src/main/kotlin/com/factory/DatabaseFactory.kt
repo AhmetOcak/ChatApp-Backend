@@ -10,17 +10,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DatabaseFactory {
     fun init() {
         val database = Database.connect(
-            url = "jdbc:postgresql://localhost:5432/chat-app",
+            url = System.getenv("DB_URL"),
             driver = "org.postgresql.Driver",
-            user = "postgres",
-            password = "ahmetocak2000"
+            user = System.getenv("DB_USER"),
+            password = System.getenv("DB_PASSWORD")
         )
         transaction (database) {
             SchemaUtils.apply {
                 create(UserTable)
-                //create(ChatRoomsTable)
                 create(MessagesTable)
-                //create(UserChatRoomsTable)
                 create(FriendTable)
                 create(FcmTokenTable)
             }
