@@ -6,7 +6,7 @@ import com.google.firebase.FirebaseOptions
 import java.io.InputStream
 
 object FirebaseAdmin {
-    private val service : InputStream? = this::class.java.classLoader.getResourceAsStream("service_account.json")
+    private val service : InputStream? = this::class.java.classLoader.getResourceAsStream("/etc/secrets/service_account.json")
 
     private val options: FirebaseOptions = FirebaseOptions.builder()
         .setCredentials(GoogleCredentials.fromStream(service))
