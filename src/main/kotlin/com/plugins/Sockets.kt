@@ -1,5 +1,6 @@
 package com.plugins
 
+import com.core.setContent
 import com.dao.FcmTokenDao
 import com.dao.MessagesDao
 import com.firebase.sendFcmMessage
@@ -51,7 +52,7 @@ fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmToken
                             sendFcmMessage(
                                 notificationContent = NotificationContent(
                                     title = message.senderUsername,
-                                    message = message.messageContent
+                                    message = setContent(message)
                                 ),
                                 token = it
                             )

@@ -1,6 +1,7 @@
 package com.routing
 
 import com.core.isValidEmail
+import com.core.setContent
 import com.dao.FcmTokenDao
 import com.dao.MessagesDao
 import com.firebase.sendFcmMessage
@@ -78,7 +79,7 @@ fun Application.configureMessageRouting(messagesDao: MessagesDao, fcmTokenDao: F
                         sendFcmMessage(
                             notificationContent = NotificationContent(
                                 title = message.senderUsername,
-                                message = message.messageContent
+                                message = setContent(message)
                             ),
                             token = it
                         )
