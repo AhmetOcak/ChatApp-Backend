@@ -1,7 +1,8 @@
 package com.routing
 
 import com.core.isValidEmail
-import com.dao.impl.UserDaoImpl
+import com.dao.FriendDao
+import com.dao.UserDao
 import com.model.User
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -15,7 +16,7 @@ import java.lang.Exception
 
 private const val BASE = "user"
 
-fun Application.configureUserRouting(userDao: UserDaoImpl) {
+fun Application.configureUserRouting(userDao: UserDao, friendDao: FriendDao) {
     routing {
 
         get("/$BASE/getUser/{userEmail}") {
@@ -99,6 +100,11 @@ fun Application.configureUserRouting(userDao: UserDaoImpl) {
                 )
 
                 if (isUpdated) {
+                    friendDao.updateFriend(
+                        userEmail = userEmail,
+                        username = username,
+                        profilePicUrl = profilePicUrl
+                    )
                     call.respond(HttpStatusCode.OK, message = "User updated successfully.")
                 } else {
                     call.respond(HttpStatusCode.InternalServerError, message = "User update failed.")

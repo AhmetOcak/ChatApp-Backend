@@ -16,7 +16,7 @@ fun Application.module() {
     configureSockets(messagesDao = MessagesDaoImpl(), fcmTokenDao = FcmTokenDaoImpl())
     configureSerialization()
     configureDatabases()
-    configureUserRouting(userDao = UserDaoImpl())
+    configureUserRouting(userDao = UserDaoImpl(), friendDao = FriendDaoImpl())
     configureMessageRouting(messagesDao = MessagesDaoImpl(), fcmTokenDao = FcmTokenDaoImpl())
     configureFriendRouting(friendDao = FriendDaoImpl(), userDao = UserDaoImpl())
     configureFcmTokenRouting(fcmTokenDao = FcmTokenDaoImpl(), userDao = UserDaoImpl())

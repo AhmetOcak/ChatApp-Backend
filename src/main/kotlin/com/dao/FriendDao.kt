@@ -12,5 +12,10 @@ interface FriendDao {
     ): Friend?
 
     suspend fun getByEmail(userEmail: String): List<Friend>
+    suspend fun updateFriend(
+        userEmail: String,
+        username: String?,
+        profilePicUrl: String?
+    )
     fun rowTo(row: ResultRow): Friend
 }

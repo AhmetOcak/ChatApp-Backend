@@ -2,12 +2,9 @@ package com.dao.impl
 
 import com.dao.FriendDao
 import com.db_tables.FriendTable
-import org.jetbrains.exposed.sql.ResultRow
 import com.factory.DatabaseFactory.dbQuery
 import com.model.Friend
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 
 class FriendDaoImpl : FriendDao {
     override suspend fun create(
@@ -31,6 +28,21 @@ class FriendDaoImpl : FriendDao {
         return dbQuery {
             FriendTable.select { (FriendTable.userEmail eq userEmail) or (FriendTable.friendEmail eq userEmail) }
                 .map { rowTo(it) }
+        }
+    }
+
+    override suspend fun updateFriend(
+        userEmail: String,
+        username: String?,
+        profilePicUrl: String?
+    ) {
+        dbQuery {
+            FriendTable.update ({
+                (FriendTable.userEmail eq userEmail) or (FriendTable.friendEmail eq userEmail) }
+            ) { updateStatement ->
+                username?.let { updateStatement[FriendTable.friendUsername] = it }
+                profilePicUrl?.let { updateStatement[FriendTable.friendProfilePicUrl] = it }
+            }
         }
     }
 
