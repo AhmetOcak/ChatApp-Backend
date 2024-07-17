@@ -28,6 +28,10 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
                     throw IllegalArgumentException("Email is not valid")
                 }
 
+                if (chatGroupDao.isPrivateGroupExist(currentUserEmail, friendEmail)) {
+                    throw IllegalArgumentException("User already a friend")
+                }
+
                 val currentUserAccount = userDao.getByEmail(currentUserEmail)
                 val friendAccount = userDao.getByEmail(friendEmail)
 
@@ -57,6 +61,7 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
 
                         val participants = group.participants.toMutableList()
                         participants.add(friend)
+
                         call.respond(HttpStatusCode.Created, group.copy(participants = participants))
                     } else call.respond(HttpStatusCode.InternalServerError)
                 } else {
@@ -141,7 +146,13 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
                     throw Exception("Email cannot be blank")
                 }
 
-                val groups = chatGroupDao.getByEmail(userEmail)
+                val groups = chatGroupDao.getByEmail(userEmail).map {
+                    it.copy(
+                        name = if (it.groupType == GroupType.CHAT_GROUP) it.name
+                        else it.participants.first { p -> p.participantEmail != userEmail }.participantUsername
+                    )
+                }
+
                 call.respond(HttpStatusCode.OK, groups)
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, message = e.stackTraceToString())

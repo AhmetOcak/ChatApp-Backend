@@ -25,5 +25,6 @@ interface ChatGroupDao {
     suspend fun getByEmail(email: String): List<ChatGroup>
     suspend fun getGroupParticipants(groupId: Int): List<String>
     suspend fun updateGroupParticipants(userEmail: String, userName: String?, profilePicUrl: String?)
+    suspend fun isPrivateGroupExist(userEmail: String, friendEmail: String): Boolean
     fun rowToParticipants(row: ResultRow): ChatGroupParticipants
 }

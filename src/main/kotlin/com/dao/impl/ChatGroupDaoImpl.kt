@@ -130,6 +130,47 @@ class ChatGroupDaoImpl : ChatGroupDao {
         }
     }
 
+    override suspend fun isPrivateGroupExist(userEmail: String, friendEmail: String): Boolean {
+        return dbQuery {
+            val privateGroups = ChatGroupTable.select {
+                ChatGroupTable.groupType eq GroupType.PRIVATE_CHAT_GROUP.name
+            }.map {
+                ChatGroup(
+                    id = it[ChatGroupTable.id],
+                    name = it[ChatGroupTable.name],
+                    groupType = it[ChatGroupTable.groupType].toGroupType(),
+                    participants = ChatGroupParticipantsTable.select {
+                        ChatGroupParticipantsTable.groupId eq it[ChatGroupTable.id]
+                    }.map { participantTable ->
+                        ChatGroupParticipants(
+                            id = it[ChatGroupTable.id],
+                            participantEmail = participantTable[ChatGroupParticipantsTable.participantEmail],
+                            participantUsername = participantTable[ChatGroupParticipantsTable.participantUsername],
+                            participantProfilePicUrl = participantTable[ChatGroupParticipantsTable.participantProfilePicUrl]
+                        )
+                    },
+                    imageUrl = it[ChatGroupTable.imageUrl]
+                )
+            }
+
+            val userGroupsIds: MutableSet<Int> = mutableSetOf()
+            val friendGroupsIds: MutableSet<Int> = mutableSetOf()
+
+            privateGroups.map { group ->
+                group.participants.firstOrNull { it.participantEmail == userEmail }?.let {
+                    userGroupsIds.add(it.id)
+                }
+            }
+            privateGroups.map { group ->
+                group.participants.firstOrNull { it.participantEmail == friendEmail }?.let {
+                    friendGroupsIds.add(it.id)
+                }
+            }
+
+            userGroupsIds.any { it in friendGroupsIds }
+        }
+    }
+
     override fun rowToParticipants(row: ResultRow): ChatGroupParticipants {
         return ChatGroupParticipants(
             id = row[ChatGroupParticipantsTable.groupId],
