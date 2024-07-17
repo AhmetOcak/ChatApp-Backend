@@ -19,8 +19,9 @@ object DatabaseFactory {
             SchemaUtils.apply {
                 create(UserTable)
                 create(MessagesTable)
-                create(FriendTable)
                 create(FcmTokenTable)
+                create(ChatGroupTable)
+                create(ChatGroupParticipantsTable)
             }
         }
     }

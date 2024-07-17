@@ -6,9 +6,8 @@ import java.time.LocalDateTime
 
 object MessagesTable : Table() {
     val id = integer("id").autoIncrement()
-    val friendshipId = integer("friendship_id")
+    val messageBoxId = integer("message_box_id")
     val senderEmail = varchar("sender_email", 128)
-    val receiverEmail = varchar("receiver_email", 128)
     val messageContent = text("message_content")
     val senderImgUrl = varchar("sender_img_url", 256).nullable()
     val senderUsername = varchar("sender_user_name", 128)

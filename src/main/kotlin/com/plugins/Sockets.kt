@@ -1,6 +1,7 @@
 package com.plugins
 
 import com.core.setContent
+import com.dao.ChatGroupDao
 import com.dao.FcmTokenDao
 import com.dao.MessagesDao
 import com.firebase.sendFcmMessage
@@ -12,10 +13,11 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.isActive
 import kotlinx.serialization.json.Json
 
-fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmTokenDao) {
+fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmTokenDao, chatGroupDao: ChatGroupDao) {
     install(WebSockets) {
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
     }
@@ -32,9 +34,8 @@ fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmToken
                     val receivedMessage = receiveDeserialized<Message>()
 
                     val message = messagesDao.create(
-                        friendshipId = receivedMessage.friendshipId,
+                        messageBoxId = receivedMessage.messageBoxId,
                         senderEmail = receivedMessage.senderEmail,
-                        receiverEmail = receivedMessage.receiverEmail,
                         messageContent = receivedMessage.messageContent,
                         senderImgUrl = receivedMessage.senderImgUrl,
                         senderUsername = receivedMessage.senderUsername,
@@ -44,18 +45,32 @@ fun Application.configureSockets(messagesDao: MessagesDao, fcmTokenDao: FcmToken
                     if (message == null) {
                         call.respond(HttpStatusCode.InternalServerError, message = "Message could not be send.")
                     } else {
-                        // Broadcast message to specific client
-                        connections[message.senderEmail]?.sendSerialized(message)
-                        connections[message.receiverEmail]?.sendSerialized(message)
 
-                        fcmTokenDao.get(message.receiverEmail)?.let {
-                            sendFcmMessage(
-                                notificationContent = NotificationContent(
-                                    title = message.senderUsername,
-                                    message = setContent(message)
-                                ),
-                                token = it
-                            )
+                        val participants = chatGroupDao.getGroupParticipants(receivedMessage.messageBoxId)
+                        participants.forEach { email ->
+                            // Send messages to specific client/clients only when client online
+                            try {
+                                connections[email]?.sendSerialized(message)
+                            } catch (e: CancellationException) {
+                                // If target client lost its websocket connection we remove its email
+                                connections.remove(email)
+                            }
+
+                            if (email != message.senderEmail) {
+                                // If target client isn't online we will send notification message thought firebase
+                                if (connections[email] == null) {
+                                    // Send notification message to every participant
+                                    fcmTokenDao.get(email)?.let {
+                                        sendFcmMessage(
+                                            notificationContent = NotificationContent(
+                                                title = message.senderUsername,
+                                                message = setContent(message)
+                                            ),
+                                            token = it
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

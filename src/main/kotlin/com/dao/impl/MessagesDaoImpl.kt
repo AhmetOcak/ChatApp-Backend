@@ -1,5 +1,6 @@
 package com.dao.impl
 
+import com.core.toMessageType
 import com.dao.MessagesDao
 import com.db_tables.MessagesTable
 import com.factory.DatabaseFactory.dbQuery
@@ -7,22 +8,19 @@ import com.model.Message
 import com.model.MessageType
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import java.lang.IllegalArgumentException
 
 class MessagesDaoImpl : MessagesDao {
     override suspend fun create(
-        friendshipId: Int,
+        messageBoxId: Int,
         senderEmail: String,
-        receiverEmail: String,
         messageContent: String,
         senderImgUrl: String?,
         senderUsername: String,
         messageType: MessageType
     ): Message? = dbQuery {
         val insertStatement = MessagesTable.insert {
-            it[MessagesTable.friendshipId] = friendshipId
+            it[MessagesTable.messageBoxId] = messageBoxId
             it[MessagesTable.senderEmail] = senderEmail
-            it[MessagesTable.receiverEmail] = receiverEmail
             it[MessagesTable.messageContent] = messageContent
             it[MessagesTable.senderImgUrl] = senderImgUrl
             it[MessagesTable.senderUsername] = senderUsername
@@ -32,13 +30,13 @@ class MessagesDaoImpl : MessagesDao {
     }
 
     override suspend fun getById(
-        friendshipId: Int,
+        messageBoxId: Int,
         page: Int,
         pageSize: Int
     ): List<Message> {
         return dbQuery {
             MessagesTable.select(
-                MessagesTable.friendshipId eq friendshipId
+                MessagesTable.messageBoxId eq messageBoxId
             ).orderBy(MessagesTable.sentAt to SortOrder.DESC)
                 .limit(pageSize, offset = (page * pageSize).toLong())
                 .map { rowTo(it) }
@@ -46,12 +44,12 @@ class MessagesDaoImpl : MessagesDao {
     }
 
     override suspend fun getTotalItems(
-        friendshipId: Int,
+        messageBoxId: Int,
         pageSize: Int
     ): Long {
         return dbQuery {
             val count = MessagesTable.select(
-                MessagesTable.friendshipId eq friendshipId
+                MessagesTable.messageBoxId eq messageBoxId
             ).count()
             count / pageSize
         }
@@ -60,9 +58,8 @@ class MessagesDaoImpl : MessagesDao {
     override fun rowTo(row: ResultRow): Message {
         return Message(
             id = row[MessagesTable.id],
-            friendshipId = row[MessagesTable.friendshipId],
+            messageBoxId = row[MessagesTable.messageBoxId],
             senderEmail = row[MessagesTable.senderEmail],
-            receiverEmail = row[MessagesTable.receiverEmail],
             messageContent = row[MessagesTable.messageContent],
             sentAt = row[MessagesTable.sentAt].toString(),
             senderImgUrl = row[MessagesTable.senderImgUrl],
@@ -72,12 +69,3 @@ class MessagesDaoImpl : MessagesDao {
     }
 }
 
-private fun String.toMessageType(): MessageType {
-    return when (this.uppercase()) {
-        MessageType.TEXT.name -> MessageType.TEXT
-        MessageType.AUDIO.name -> MessageType.AUDIO
-        MessageType.IMAGE.name -> MessageType.IMAGE
-        MessageType.DOC.name -> MessageType.DOC
-        else -> throw IllegalArgumentException("Wrong message type $this")
-    }
-}
