@@ -99,5 +99,16 @@ fun Application.configureMessageRouting(
                 call.respond(HttpStatusCode.InternalServerError, message = e.message ?: e.stackTraceToString())
             }
         }
+
+        get("$BASE/getAllMediaMessages/{messageBoxId}") {
+            try {
+                val messageBoxId = call.parameters["messageBoxId"]?.toInt() ?: return@get
+                val messages = messagesDao.getAllMediaTypeMessages(messageBoxId)
+
+                call.respond(HttpStatusCode.OK, messages)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.stackTraceToString())
+            }
+        }
     }
 }

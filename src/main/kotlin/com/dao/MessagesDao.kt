@@ -25,5 +25,7 @@ interface MessagesDao {
         pageSize: Int
     ): Long
 
+    suspend fun getAllMediaTypeMessages(messageBoxId: Int): List<Message>
+
     fun rowTo(row: ResultRow): Message
 }

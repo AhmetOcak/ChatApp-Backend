@@ -55,6 +55,14 @@ class MessagesDaoImpl : MessagesDao {
         }
     }
 
+    override suspend fun getAllMediaTypeMessages(messageBoxId: Int): List<Message> {
+        return dbQuery {
+            MessagesTable.select {
+                ((MessagesTable.messageBoxId eq messageBoxId) and (MessagesTable.messageType neq MessageType.TEXT.name))
+            }.map { rowTo(it) }
+        }
+    }
+
     override fun rowTo(row: ResultRow): Message {
         return Message(
             id = row[MessagesTable.id],

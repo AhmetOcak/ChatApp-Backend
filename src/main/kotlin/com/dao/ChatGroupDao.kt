@@ -26,5 +26,7 @@ interface ChatGroupDao {
     suspend fun getGroupParticipants(groupId: Int): List<String>
     suspend fun updateGroupParticipants(userEmail: String, userName: String?, profilePicUrl: String?)
     suspend fun isPrivateGroupExist(userEmail: String, friendEmail: String): Boolean
+    suspend fun updateGroupImage(groupId: Int, imageUrl: String): Boolean
+    suspend fun isChatGroupNameExist(name: String): Boolean
     fun rowToParticipants(row: ResultRow): ChatGroupParticipants
 }

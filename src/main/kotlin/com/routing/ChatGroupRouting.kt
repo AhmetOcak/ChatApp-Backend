@@ -91,6 +91,10 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
                     throw IllegalArgumentException("Name cannot be blank")
                 }
 
+                if (chatGroupDao.isChatGroupNameExist(name)) {
+                    throw IllegalArgumentException("Group name already used")
+                }
+
                 val group = chatGroupDao.create(
                     name = name,
                     imageUrl = imageUrl,
@@ -117,20 +121,23 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
                 val formParameters = call.receiveParameters()
                 val groupId = formParameters.getOrFail("groupId").toInt()
                 val participantEmail = formParameters.getOrFail("participantEmail")
-                val participantUsername = formParameters.getOrFail("participantUsername")
-                val participantProfilePicUrl = formParameters["participantProfilePicUrl"]
 
                 if (!participantEmail.isValidEmail()) {
                     throw IllegalArgumentException("Email is not valid")
                 }
 
-                chatGroupDao.addParticipant(
-                    groupId = groupId,
-                    userEmail = participantEmail,
-                    userName = participantUsername,
-                    profilePicUrl = participantProfilePicUrl
-                )
-                call.respond(HttpStatusCode.OK)
+                val user = userDao.getByEmail(participantEmail)
+                if (user == null) {
+                    throw IllegalArgumentException("User doesnt exist")
+                } else {
+                    chatGroupDao.addParticipant(
+                        groupId = groupId,
+                        userEmail = participantEmail,
+                        userName = user.username,
+                        profilePicUrl = user.profilePicUrl
+                    )
+                    call.respond(HttpStatusCode.OK, user)
+                }
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, message = e.stackTraceToString())
             } catch (e: Exception) {
@@ -154,6 +161,27 @@ fun Application.configureChatGroupRouting(chatGroupDao: ChatGroupDao, userDao: U
                 }
 
                 call.respond(HttpStatusCode.OK, groups)
+            } catch (e: IllegalArgumentException) {
+                call.respond(HttpStatusCode.BadRequest, message = e.stackTraceToString())
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, message = e.message ?: e.stackTraceToString())
+            }
+        }
+
+        put("$BASE/updateGroupImage") {
+            try {
+                val formParameters = call.receiveParameters()
+                val imageUrl = formParameters.getOrFail("imageUrl")
+                val groupId = formParameters.getOrFail("groupId").toInt()
+
+                if (imageUrl.isBlank()) {
+                    throw IllegalArgumentException("Image url cannot be blank")
+                }
+
+                val isUpdated = chatGroupDao.updateGroupImage(groupId, imageUrl)
+                if (isUpdated) {
+                    call.respond(HttpStatusCode.OK)
+                } else call.respond(HttpStatusCode.InternalServerError, "Group image cannot updated")
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, message = e.stackTraceToString())
             } catch (e: Exception) {

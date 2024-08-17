@@ -8,10 +8,7 @@ import com.factory.DatabaseFactory.dbQuery
 import com.model.ChatGroup
 import com.model.ChatGroupParticipants
 import com.model.GroupType
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
 
 class ChatGroupDaoImpl : ChatGroupDao {
     override suspend fun create(
@@ -168,6 +165,22 @@ class ChatGroupDaoImpl : ChatGroupDao {
             }
 
             userGroupsIds.any { it in friendGroupsIds }
+        }
+    }
+
+    override suspend fun updateGroupImage(groupId: Int, imageUrl: String): Boolean {
+        return dbQuery {
+            ChatGroupTable.update({ ChatGroupTable.id eq groupId }) { updateStatement ->
+                updateStatement[ChatGroupTable.imageUrl] = imageUrl
+            } > 0
+        }
+    }
+
+    override suspend fun isChatGroupNameExist(name: String): Boolean {
+        return dbQuery {
+            ChatGroupTable.select {
+                ((ChatGroupTable.groupType eq GroupType.CHAT_GROUP.name) and (ChatGroupTable.name eq name))
+            }.firstOrNull() != null
         }
     }
 

@@ -10,10 +10,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DatabaseFactory {
     fun init() {
         val database = Database.connect(
-            url = System.getenv("DB_URL"),
+            url = "jdbc:postgresql://localhost:5432/chat-app",
             driver = "org.postgresql.Driver",
-            user = System.getenv("DB_USER"),
-            password = System.getenv("DB_PASSWORD")
+            user = "postgres",
+            password = "ahmetocak2000"
         )
         transaction (database) {
             SchemaUtils.apply {
