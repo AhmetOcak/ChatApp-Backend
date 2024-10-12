@@ -1,6 +1,7 @@
 # ChatApp-Backend
 
 This repository contains the backend implementation for a real-time chat application using Ktor, a Kotlin-based server framework. The application provides APIs for user authentication, messaging, and managing chat rooms.
+[To see how this back-end project was implemented](https://github.com/AhmetOcak/ChatApp).
 
 ## Table of Contents
 
